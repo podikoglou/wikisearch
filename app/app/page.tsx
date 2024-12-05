@@ -11,7 +11,9 @@ export default function () {
 
   return (
     <div className="flex flex-col max-w-sm mx-auto my-16 gap-8">
-      <h1 className="text-6xl font-bold text-center">Wikisearch</h1>
+      <a href="/">
+        <h1 className="text-6xl font-bold text-center">Wikisearch</h1>
+      </a>
 
       <Search queryFn={query} setResultsFn={setResults} />
 
