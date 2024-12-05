@@ -6,6 +6,7 @@ import {
 } from "react";
 import type { Query, QueryResult } from "../lib/query";
 import { useQueryState } from "nuqs";
+import { useDebounce } from "use-debounce";
 
 export default function ({
   queryFn,
@@ -17,6 +18,7 @@ export default function ({
   "use client";
 
   const [query, setQuery] = useQueryState("q");
+  const [queryValue] = useDebounce(query, 50);
 
   const onInput = async (event: FormEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -24,13 +26,13 @@ export default function ({
 
   useEffect(() => {
     async function performQuery() {
-      const result = await queryFn(query || "");
+      const result = await queryFn(queryValue || "");
 
       setResultsFn(result);
     }
 
     performQuery();
-  }, [query, queryFn, setResultsFn]);
+  }, [queryValue, queryFn, setResultsFn]);
 
   return (
     <input
