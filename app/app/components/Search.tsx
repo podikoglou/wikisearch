@@ -1,26 +1,43 @@
-import type { Dispatch, SetStateAction, FormEvent } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  type FormEvent,
+  useEffect,
+} from "react";
 import type { Query, QueryResult } from "../lib/query";
+import { useQueryState } from "nuqs";
 
 export default function ({
-  query,
-  setResults,
+  queryFn,
+  setResultsFn,
 }: {
-  query: (q: Query) => Promise<QueryResult[]>;
-  setResults: Dispatch<SetStateAction<QueryResult[]>>;
+  queryFn: (q: Query) => Promise<QueryResult[]>;
+  setResultsFn: Dispatch<SetStateAction<QueryResult[]>>;
 }) {
   "use client";
 
-  const onInput = async (event: FormEvent<HTMLInputElement>) => {
-    const result = await query(event.target.value);
+  const [query, setQuery] = useQueryState("q");
 
-    setResults(result);
+  const onInput = async (event: FormEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
   };
+
+  useEffect(() => {
+    async function performQuery() {
+      const result = await queryFn(query || "");
+
+      setResultsFn(result);
+    }
+
+    performQuery();
+  }, [query, queryFn, setResultsFn]);
 
   return (
     <input
       className="text-lg py-2 px-4 border-1 rounded-xl bg-teal-950 border-white"
       placeholder="Search"
       onInput={onInput}
+      value={query || ""}
     />
   );
 }
